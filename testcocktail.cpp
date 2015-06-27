@@ -32,12 +32,14 @@ int cocktail( int array[], int size )
 			}
 		}
 	}
+	return 0;
 }
+
 
 int main()
 {
-	int array[] = { 12,3,34,56,7,8,9,100};
-	cocktail( array, sizeof(array)/sizeof(int) );
+	int array[] = { 12,3,34,56,7,8,9,100 };
+	(void)cocktail( array, sizeof(array)/sizeof(int) );
 	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
 	{
 		printf( "%d ", array[i] );
@@ -46,3 +48,4 @@ int main()
 
 	return 0;
 }
+

@@ -81,10 +81,14 @@ int main()
 {
 	char p[] = "98";
 	char c[] = "123";
-	increment( p, strlen(p) );
+	(void)increment( p, strlen(p) );
 	printf( "p %s\n", p );
+	
 	int res = judge( p, c );
 	printf( "res %d\n", res );
-	display( p );
+
+	(void)display( p );
+	
 	return 0;
 }
+

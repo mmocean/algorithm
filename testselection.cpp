@@ -50,7 +50,7 @@ int selection( int array[], int size )
 
 int main()
 {	
-	int array[] = { 2,3,34,56,7,8,9,100};
+	int array[] = { 2,3,34,56,7,8,9,100 };
 	(void)selection( array, sizeof(array)/sizeof(int) );
 	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
 	{

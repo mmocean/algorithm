@@ -18,6 +18,7 @@ int cycleshift( int x, int n )
 	return x;
 }
 
+
 int main()
 {
 	int ret = cycleshift( 4, 1 );

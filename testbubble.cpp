@@ -27,8 +27,8 @@ int bubble( int arrary[], int size )
 
 int main()
 {
-	int array[] = { 12,3,34,56,7,8,9,100};
-	bubble( array, sizeof(array)/sizeof(int) );
+	int array[] = { 12,3,34,56,7,8,9,100 };
+	(void)bubble( array, sizeof(array)/sizeof(int) );
 	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
 	{
 		printf( "%d ", array[i] );
