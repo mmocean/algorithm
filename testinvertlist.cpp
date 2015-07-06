@@ -81,17 +81,95 @@ NODE* invertlist( struct NODE* head )
 }
 
 
+NODE* insertionsortlist( struct NODE* head )
+{
+	struct NODE* newlist = head;
+	struct NODE* pre = NULL;
+	while( NULL != head )
+	{
+		struct NODE* tmp = newlist;
+		struct NODE* subspre = NULL;
+		while( NULL != tmp && tmp != head && head->val > tmp->val )
+		{
+			subspre = tmp;
+			tmp = tmp->next;
+		}
+		if( tmp != head )
+		{
+			pre->next = head->next;
+			if( NULL == subspre )
+			{
+				head->next = newlist;
+				newlist = head;
+			} else {
+				head->next = tmp;
+				subspre->next = head;
+			}
+		}
+		pre = head;
+		head = head->next;
+	}
+	return newlist;
+}
+
+
+NODE* mergelist( struct NODE* list1, struct NODE* list2 )
+{
+	struct NODE* newlist = NULL;
+	struct NODE* rear = NULL;
+	while( NULL != list1 && NULL != list2 )
+	{
+		struct NODE* tmp = NULL;
+		if( list1->val < list2->val )
+		{
+			tmp = list1;
+			list1 = list1->next;
+		} else {
+			tmp = list2;
+			list2 = list2->next;
+		}
+
+		if( NULL == newlist )
+		{
+			newlist = tmp;
+			rear = tmp;
+		} else {
+			rear->next = tmp;
+			rear = rear->next;
+		}
+	}
+	if( NULL != rear )
+		rear->next = (NULL==list1)?list2:list1;
+	
+	return newlist;
+}
+
+
 int main()
 {
-	int array[] = { 12,3,34,56,7,8,9,100 };
+	int array[] = { 2,6,4,10,8 };
 	
-	struct NODE* head = createlist( array, sizeof(array)/sizeof(int) );
-	traversallist( head );
+	struct NODE* list1 = createlist( array, sizeof(array)/sizeof(int) );
+	traversallist( list1 );
 
-	head = invertlist( head );
-	traversallist( head );
+//	head = invertlist( list1 );
+//	traversallist( list1 );
 
-	freelist( head );
+	list1 = insertionsortlist( list1 );
+	traversallist( list1 );
+
+	int array2[] = { 7,5,1 };
+	
+	struct NODE* list2 = createlist( array2, sizeof(array2)/sizeof(int) );
+	traversallist( list2 );
+
+	list2 = insertionsortlist( list2 );
+	traversallist( list2 );
+
+	struct NODE* newlist = mergelist( list1, list2 );
+	traversallist( newlist );
+
+	freelist( newlist );
 
 	return 0;
 }
