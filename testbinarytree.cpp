@@ -7,53 +7,8 @@
 
 #include<stdio.h>
 #include<stdlib.h>
-
-//tree definition
-struct TREE{
-	int val;
-	struct TREE *lchild, *rchild;
-};
-
-
-int initbinarytree( struct TREE **root, int array[], int size )
-{
-	static int i = 0;
-	if( i < size )
-	{
-		int val = *(array+(i++));
-		if( -1 == val )
-		{
-			root = NULL;	
-		} else {
-			struct TREE* tmp = (struct TREE*)malloc(sizeof(struct TREE));
-			if( NULL == tmp )
-			{
-				exit(-1);
-			}
-			tmp->val = val;
-			tmp->lchild = NULL;
-			tmp->rchild = NULL;
-			*root = tmp;
-			initbinarytree( &(*root)->lchild, array, size );
-			initbinarytree( &(*root)->rchild, array, size );
-		}
-	}
-	return 0;
-}
-
-
-int clearbinarytree( struct TREE **root )
-{
-	if( NULL == *root )
-		return -1;
-	clearbinarytree( &(*root)->lchild );
-	clearbinarytree( &(*root)->rchild );
-	free( (void*)*root );
-	*root = NULL;//necessary
-
-	return 0;
-}
-
+#include"definitionstack.h"
+#include"definitionbinarytree.h"
 
 int visit( int val )
 {
@@ -121,29 +76,67 @@ int invertbinarytree( struct TREE *root )
 }
 
 
+//non-recursive
+int  nonpreordertraversal( const struct TREE *root, int (*visit)(int) )
+{
+	struct NODE* stack = NULL;
+	while( NULL != root )
+	{
+		visit( root->val );
+	
+		if( NULL != root->rchild && 0 != push( &stack, (int)root->rchild ) )
+			return -1;
+
+		if( NULL == root->lchild )
+		{
+			if( 0 != pop( &stack, (int*)&root ) )
+				return -1;
+		} else {
+			root = root->lchild;
+		}
+	}
+
+	return 0;
+}
+
+
 int main()
 {
 	int array[] = { 1,2,3,-1,-1,4,5,-1,7,-1,-1,6,-1,-1,-1 };
 	
 	struct TREE *root = NULL;
 
+	printf( "initbinarytree\n" );
 	initbinarytree( &root, array, sizeof(array)/sizeof(int) );
+	printf( "\n\n" );
 
+	printf( "preordertraversal\n" );
 	preordertraversal( root, visit );	
-	printf( "\n" );
+	printf( "\n\n" );
 
+	printf( "inordertraversal\n" );
 	inordertraversal( root, visit );
-	printf( "\n" );
+	printf( "\n\n" );
 	
+	printf( "postordertraversal\n" );
 	postordertraversal( root, visit );
-	printf( "\n" );
+	printf( "\n\n" );
 
+	printf( "invertbinarytree\n" );
 	invertbinarytree( root );
+	printf( "\n\n" );
 
+	printf( "preordertraversal\n" );
 	preordertraversal( root, visit );	
-	printf( "\n" );
-
+	printf( "\n\n" );
+	
+	printf( "nonpreordertraversal\n" );
+	nonpreordertraversal( root, visit );	
+	printf( "\n\n" );
+	
+	printf( "clearbinarytree\n" );
 	clearbinarytree( &root );
+	printf( "\n\n" );
 	
 	return 0;
 }
