@@ -100,6 +100,53 @@ int  nonpreordertraversal( const struct TREE *root, int (*visit)(int) )
 }
 
 
+struct TREE * searchbinarysearchtree( struct TREE *root, int key )
+{
+	if( NULL != root )
+	{
+		if( key < root->val )
+		{
+			if( NULL != root->lchild )
+				return searchbinarysearchtree( root->lchild, key );
+		} else if (key > root->val) {
+			if( NULL != root->rchild )
+				return searchbinarysearchtree( root->rchild, key );
+		}
+	}
+	return root;
+}
+
+
+struct TREE * initbinarysearchtree( int array[], int size )
+{
+	struct TREE *root = NULL;
+	for( int i = 0; i<size; i++ )
+	{
+		struct TREE* tmp = (struct TREE*)malloc(sizeof(struct TREE));
+		if( NULL == tmp )
+			exit(-1);
+		tmp->val = *(array+i);
+		tmp->lchild = NULL;
+		tmp->rchild = NULL;
+		struct TREE * node = searchbinarysearchtree( root, *(array+i) );
+		if( NULL == node )
+		{
+			root = tmp;	
+		} else {
+			if( *(array+i) == node->val )
+			{
+				free((void*)tmp);
+			} else if( *(array+i) < node->val ) {
+				node->lchild = tmp;
+			} else {
+				node->rchild = tmp;
+			}
+		}
+	}
+	return root;
+}
+
+
 int main()
 {
 	int array[] = { 1,2,3,-1,-1,4,5,-1,7,-1,-1,6,-1,-1,-1 };
@@ -137,7 +184,19 @@ int main()
 	printf( "clearbinarytree\n" );
 	clearbinarytree( &root );
 	printf( "\n\n" );
+
+	printf( "initbinarysearchtree\n" );
+	struct TREE *bst = initbinarysearchtree( array, sizeof(array)/sizeof(int) );
+	printf( "\n\n" );
+
+	printf( "inordertraversal\n" );
+	inordertraversal( bst, visit );
+	printf( "\n\n" );
 	
+	printf( "clearbinarytree\n" );
+	clearbinarytree( &bst );
+	printf( "\n\n" );
+
 	return 0;
 }
 
