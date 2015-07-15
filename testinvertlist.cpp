@@ -48,9 +48,11 @@ NODE* insertionsortlist( struct NODE* head )
 				head->next = tmp;
 				subspre->next = head;
 			}
+			head = pre->next;
+		} else {
+			pre = head;
+			head = head->next;
 		}
-		pre = head;
-		head = head->next;
 	}
 	return newlist;
 }
@@ -88,6 +90,68 @@ NODE* mergelist( struct NODE* list1, struct NODE* list2 )
 }
 
 
+//判读链表是否有环
+int cyclejudgement( const struct NODE* head, struct NODE** node )
+{
+	*node = NULL;
+	if( NULL != head && head == head->next )
+	{
+		*node = (struct NODE*)head;
+		return 0;
+	}
+
+	const struct NODE* pre = head;
+	const struct NODE* rear = head;
+	
+	while( NULL != pre && NULL != pre->next )
+	{
+		pre = pre->next->next;
+		rear = rear->next;
+		printf( "pre %d rear %d\n", pre->val, rear->val );	
+		if( pre == rear )
+		{
+			pre = head;
+			while( pre != rear )
+			{
+				pre = pre->next;
+				rear = rear->next;
+			}
+			*node = (struct NODE*) pre;
+			return 0;
+		}
+	}
+
+	return -1;
+}
+
+
+//返回链表倒数第K个节点
+const NODE* lastKnode( struct NODE* head , int k )
+{
+	if( k <= 0 ) 
+	{
+		return NULL;
+	} else { //k >= 1
+		const struct NODE* rear = head;
+		while( NULL != head && (k--) > 0 )	
+		{
+			head = head->next;
+		}
+		if( k > 0 )
+		{
+			return NULL;
+		}
+		while( NULL != head )
+		{
+			head = head->next;
+			rear = rear->next;	
+		}
+		return rear;
+	}
+	return NULL;
+}
+
+
 int main()
 {
 	int array[] = { 2,6,4,10,8 };
@@ -101,7 +165,7 @@ int main()
 	list1 = insertionsortlist( list1 );
 	traversallist( list1 );
 
-	int array2[] = { 7,5,1 };
+	int array2[] = { 9,7,5,3,1 };
 	
 	struct NODE* list2 = createlist( array2, sizeof(array2)/sizeof(int) );
 	traversallist( list2 );
@@ -111,6 +175,35 @@ int main()
 
 	struct NODE* newlist = mergelist( list1, list2 );
 	traversallist( newlist );
+
+	for( int k = -1; k<11; k++ )
+	{
+		const struct NODE* tmp = lastKnode( newlist, k );
+		if( NULL != tmp )
+			printf( "val:%d K:%d\n", tmp->val, k );
+		else 
+			printf( "NULL k:%d\n", k );
+	}
+
+
+	struct NODE* last = (struct NODE*)lastKnode( newlist, 1 );
+	if( NULL != last )
+	{
+		printf( "last val %d\n", last->val );	
+		
+		struct NODE* tmp = (struct NODE*)lastKnode( newlist, 3 );
+		printf( "tmp val %d\n", tmp->val );	
+
+		last->next = tmp;
+		
+		struct NODE* node = NULL;
+		if( 0 == cyclejudgement( newlist, &node ) )
+		{
+			printf( "node val %d\n", node->val );	
+		}
+
+		last->next = NULL;
+	}
 
 	freelist( newlist );
 
