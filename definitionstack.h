@@ -8,11 +8,7 @@
 #ifndef _DEFINITION_SATCK_H
 #define _DEFINITION_SATCK_H
 
-//list definition
-struct NODE {
-	int val;
-	struct NODE* next;
-};
+#include"definitionlist.h"
 
 int push( struct NODE** head, int val );
 
