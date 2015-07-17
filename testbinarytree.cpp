@@ -9,6 +9,7 @@
 #include<stdlib.h>
 #include"definitionstack.h"
 #include"definitionbinarytree.h"
+#include"definitionqueue.h"
 
 int visit( int val )
 {
@@ -17,7 +18,7 @@ int visit( int val )
 }
 
 
-int  preordertraversal( const struct TREE *root, int (*visit)(int) )
+int preordertraversal( const struct TREE *root, int (*visit)(int) )
 {
 	if( NULL == root )
 	{
@@ -33,7 +34,7 @@ int  preordertraversal( const struct TREE *root, int (*visit)(int) )
 }
  
 
-int  inordertraversal( const struct TREE *root, int (*visit)(int) )
+int inordertraversal( const struct TREE *root, int (*visit)(int) )
 {
 	if( NULL == root )
 	{
@@ -77,7 +78,7 @@ int invertbinarytree( struct TREE *root )
 
 
 //non-recursive
-int  nonpreordertraversal( const struct TREE *root, int (*visit)(int) )
+int nonpreordertraversal( const struct TREE *root, int (*visit)(int) )
 {
 	struct NODE* stack = NULL;
 	while( NULL != root )
@@ -95,6 +96,78 @@ int  nonpreordertraversal( const struct TREE *root, int (*visit)(int) )
 			root = root->lchild;
 		}
 	}
+
+	return 0;
+}
+
+
+//non-recursive
+int noninordertraversal( const struct TREE *root, int (*visit)(int) )
+{
+	struct NODE* stack = NULL;
+	while( NULL != root || 0 != isempty( &stack ) )
+	{
+		while( NULL != root )		
+		{
+			if( 0 != push( &stack, (int)root ) )
+				return -1;
+			root = root->lchild;	
+		}
+		if( 0 != pop( &stack, (int*)&root ) )
+			return -1;
+		visit( root->val );
+		root = root->rchild;	
+	}
+
+	return 0;
+}
+
+
+//non-recursive
+int nonpostordertraversal( const struct TREE *root, int (*visit)(int) )
+{
+
+	return 0;
+}
+
+
+//levleltraversal
+int levleltraversal( const struct TREE *root, int (*visit)(int) )
+{
+	if( NULL == root )
+		return -1;
+
+	struct Queue q;
+	q.front = q.rear = NULL;
+	
+	if( 0 != enqueue( &q, (int)root ) )
+		return -1;
+
+	int leafcount = 0, nodecount = 0;
+
+	while( 0 != isempty( &q ) )
+	{
+		if( 0 != dequeue( &q, (int*)&root ) )
+			return -1;
+		if( NULL != root )	
+		{
+			if( NULL != root->lchild || NULL !=root->rchild )
+			{
+				if( 0 != enqueue( &q, (int)root->lchild ) )
+					return -1;
+				if( 0 != enqueue( &q, (int)root->rchild ) )
+					return -1;
+			}
+			visit( root->val );
+			++nodecount;
+		} else {
+			++leafcount;
+		}
+		if( (leafcount+nodecount)%2 == 1 )
+			printf( "\n" );	
+	}
+	
+	printf( "leafcount(NULL) %d nodecount %d\n", leafcount, nodecount );	
 
 	return 0;
 }
@@ -170,7 +243,7 @@ int main()
 	printf( "\n\n" );
 
 	printf( "invertbinarytree\n" );
-	invertbinarytree( root );
+//	invertbinarytree( root );
 	printf( "\n\n" );
 
 	printf( "preordertraversal\n" );
@@ -181,6 +254,18 @@ int main()
 	nonpreordertraversal( root, visit );	
 	printf( "\n\n" );
 	
+	printf( "noninordertraversal\n" );
+	noninordertraversal( root, visit );	
+	printf( "\n\n" );
+	
+	printf( "nonpostordertraversal\n" );
+	nonpostordertraversal( root, visit );	
+	printf( "\n\n" );
+
+	printf( "levleltraversal\n" );
+	levleltraversal( root, visit );
+	printf( "\n\n" );
+
 	printf( "clearbinarytree\n" );
 	clearbinarytree( &root );
 	printf( "\n\n" );
