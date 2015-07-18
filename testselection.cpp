@@ -7,24 +7,6 @@
 
 #include<stdio.h>
 
-int selection_wrong( int array[], int size )
-{
-	for( int i = 0; i<size; i++ )
-	{
-		for( int j = i+1; j<size; j++ )
-		{
-			if( array[i] < array[j] )
-			{
-				int tmp = array[i];
-				array[i] = array[j];
-				array[j] = tmp;
-			}
-		}
-	}
-	return 0;
-}
-
-
 int selection( int array[], int size )
 {
 	for( int i = 0; i<size; i++ )
@@ -32,16 +14,57 @@ int selection( int array[], int size )
 		int index = i;
 		for( int j = i+1; j<size; j++ )
 		{
-			if( array[index] < array[j] )
+			if( *(array+index) < *(array+j) )
 			{
 				index = j;	
 			}
 		}
 		if( i != index )
 		{
-			int tmp = array[i];
-			array[i] = array[index];
-			array[index] = tmp;
+			int tmp = *(array+i);
+			*(array+i) = *(array+index);
+			*(array+index) = tmp;
+		}
+	}
+	return 0;
+}
+
+
+int duplexselection( int array[], int size )
+{
+	for( int i = 0; i<size-i; i++ )
+	{
+		int minindex = i;
+		int maxindex = size-i-1;
+
+		if( *(array+minindex) > *(array+maxindex) )
+		{
+			int tmp = *(array+minindex);
+			*(array+minindex) = *(array+maxindex);
+			*(array+maxindex) = tmp;
+		}
+
+		for( int j = i+1; j<size-i; j++ )
+		{
+			if( *(array+j) < *(array+minindex) )
+			{
+				minindex = j;
+			} else if ( *(array+j) > *(array+maxindex) ) {
+				maxindex = j;
+			}
+		}
+		
+		if( i != minindex )
+		{
+			int tmp = *(array+minindex);
+			*(array+minindex) = *(array+i);
+			*(array+i) = tmp;	
+		}
+		if( size-i-1 != maxindex )
+		{
+			int tmp = *(array+maxindex);
+			*(array+maxindex) = *(array+size-i-1);
+			*(array+size-i-1) = tmp;	
 		}
 	}
 	return 0;
@@ -51,10 +74,11 @@ int selection( int array[], int size )
 int main()
 {	
 	int array[] = { 2,3,34,56,7,8,9,100 };
-	(void)selection( array, sizeof(array)/sizeof(int) );
+	//(void)selection( array, sizeof(array)/sizeof(int) );
+	(void)duplexselection( array, sizeof(array)/sizeof(int) );
 	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
 	{
-		printf( "%d ", array[i] );
+		printf( "%d ", *(array+i) );
 	}
 	printf( "\n" );
 
