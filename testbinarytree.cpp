@@ -62,21 +62,6 @@ int postordertraversal( const struct TREE *root, int (*visit)(int) )
 }
 
 
-int invertbinarytree( struct TREE *root )
-{
-	if( NULL == root || (NULL == root->lchild && NULL == root->rchild) )
-	{
-		return -1;
-	}
-	struct TREE *tmp = root->lchild;
-	root->lchild = root->rchild;
-	root->rchild = tmp;
-	invertbinarytree( root->lchild );
-	invertbinarytree( root->rchild );
-	return 0;
-}
-
-
 //non-recursive
 int nonpreordertraversal( const struct TREE *root, int (*visit)(int) )
 {
@@ -126,6 +111,33 @@ int noninordertraversal( const struct TREE *root, int (*visit)(int) )
 //non-recursive
 int nonpostordertraversal( const struct TREE *root, int (*visit)(int) )
 {
+	struct NODE* sr = NULL;//root
+	struct NODE* sc = NULL;//rchild
+	
+	while( NULL != root || 0 != isempty( &sc ) )
+	{
+		while( NULL != root )
+		{
+			if( 0 != push( &sr, (int)root ) )
+				return -1;
+			if( 0 != push( &sc, (int)root->rchild ) )
+				return -1;
+			root = root->lchild;	
+		}
+		if( 0 != pop( &sc, (int*)&root ) )
+			return -1;
+		if( NULL == root )
+		{
+			if( 0 != pop( &sr, (int*)&root ) )
+				return -1;	
+			visit( root->val );
+			root = NULL;
+		} else {
+			if( 0 != push( &sc, (int)NULL ) )
+				return -1;	
+		}
+	}
+
 
 	return 0;
 }
@@ -169,6 +181,34 @@ int levleltraversal( const struct TREE *root, int (*visit)(int) )
 	
 	printf( "leafcount(NULL) %d nodecount %d\n", leafcount, nodecount );	
 
+	return 0;
+}
+
+
+int depthtree( const struct TREE *root )
+{
+	if( NULL == root )
+	{
+		return 0;
+	}
+	int ld = depthtree( root->lchild );
+	int rd = depthtree( root->rchild );	
+	
+	return ( ld >= rd )?( ld+1 ):( rd+1 );
+}
+
+
+int invertbinarytree( struct TREE *root )
+{
+	if( NULL == root || (NULL == root->lchild && NULL == root->rchild) )
+	{
+		return -1;
+	}
+	struct TREE *tmp = root->lchild;
+	root->lchild = root->rchild;
+	root->rchild = tmp;
+	invertbinarytree( root->lchild );
+	invertbinarytree( root->rchild );
 	return 0;
 }
 
@@ -266,6 +306,10 @@ int main()
 	levleltraversal( root, visit );
 	printf( "\n\n" );
 
+	printf( "depthtree\n" );
+	int depth = depthtree( root );
+	printf( "depth:%d\n\n", depth );
+	
 	printf( "clearbinarytree\n" );
 	clearbinarytree( &root );
 	printf( "\n\n" );
