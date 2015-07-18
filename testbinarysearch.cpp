@@ -13,10 +13,10 @@ int binarysearch( int array[], int low, int high, int key )
 	if( low <= high )
 	{
 		int middle = (low+high)/2;
-		if( key < array[middle] )
+		if( key < *(array+middle) )
 		{
 			return binarysearch( array, low, middle-1, key );
-		} else if( key > array[middle] ) {
+		} else if( key > *(array+middle) ) {
 			return binarysearch( array, middle+1, high, key );	
 		} else {
 			return middle;
@@ -34,9 +34,9 @@ int binarysearch( int array[], int size, int key )
 	while( low <= high )
 	{
 		int middle = (low+high)/2;
-		if( key < array[middle] )
+		if( key < *(array+middle) )
 			--high;
-		else if( key > array[middle] )
+		else if( key > *(array+middle) )
 			++low;
 		else 
 			return middle;	

@@ -73,7 +73,7 @@ int topK( int array[], int size, int k )
 
 	for( int i = 0; i < k; i++ )
 	{
-		printf( "%d ", array[i] );
+		printf( "%d ", *(array+i) );
 	}
 	printf( "\n" );
 }
@@ -85,7 +85,7 @@ int main()
 //	(void)heapsort( array, sizeof(array)/sizeof(int) );
 	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
 	{
-		printf( "%d ", array[i] );
+		printf( "%d ", *(array+i) );
 	}
 	printf( "\n" );
 

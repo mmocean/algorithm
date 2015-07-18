@@ -12,7 +12,7 @@
 
 void bitmap( int array[], int key )
 {
-	array[key/32] |= (1<<(key%32));	
+	*(array+key/32) |= (1<<(key%32));	
 }
 
 

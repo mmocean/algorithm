@@ -33,16 +33,15 @@ int merge( int a[], int tmp[], int low, int middle, int high )
 
 int mergingsort( int a[], int tmp[], int low, int high )
 {
-	if( low == high )
+	if( low < high )
 	{
-		*(tmp+low) = *(a+low);
-	} else {
 		int middle = (low+high)/2;
 		//recursive
 		mergingsort( a, tmp, low, middle );
 		mergingsort( a, tmp, middle+1, high );
 		merge( a, tmp, low, middle, high );			
 	}
+
 	return 0;
 }
 
@@ -54,7 +53,7 @@ int main()
 	(void)mergingsort( array, tmp, 0, sizeof(array)/sizeof(int)-1 );
 	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
 	{
-		printf( "%d ", array[i] );
+		printf( "%d ", *(array+i) );
 	}
 	printf( "\n" );
 

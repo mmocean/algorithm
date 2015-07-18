@@ -42,7 +42,7 @@ NODE* createlist( int array[], int size )
 			freelist( head );
 			return NULL;
 		}
-		tmp->val = array[i];
+		tmp->val = *(array+i);
 		tmp->next = NULL;
 
 		if( NULL == head )

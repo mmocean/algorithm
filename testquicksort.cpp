@@ -49,7 +49,7 @@ int main()
 	int ret = merge( array, 0, sizeof(array)/sizeof(int)-1 );
 	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
 	{
-		printf( "%d ", array[i] );
+		printf( "%d ", *(array+i) );
 	}
 	printf( "\n" );
 
