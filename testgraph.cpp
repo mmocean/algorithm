@@ -31,9 +31,21 @@ struct Graph
 };
 
 
-//eg. 'A,B,321)'
+/*
+ * eg. 'A,B,321)'
+ * *start == 'A', *end == ')'
+ *
+ * */
 int parsetriple( const char *start, const char *end, int *v, int *w, int *weight )
 {
+	if( NULL == start || NULL == end )
+		return -1;
+
+	*v = (int)*start;
+	start += 2;
+	*w = (int)*start;
+	start += 2;
+	*weight = (int)*start;
 
 	return 0;
 }
@@ -83,7 +95,7 @@ int insertarc( const struct Graph *graph, int v, int w, int weight )
 		return -1;
 
 	int indexvertex = locatevertex( graph, w );
-	if( 0 != indexvertex )		
+	if( -1 == indexvertex )		
 		return -1;
 
 	struct ArcNode *arc = (struct ArcNode *)malloc( sizeof(struct ArcNode) );
@@ -103,18 +115,16 @@ int insertarc( const struct Graph *graph, int v, int w, int weight )
 /*
  *1. on success 0 is returned, otherwise -1 returned;
  *2. the format of triplearc is like this(vertex,vertex,weight): "(a,b,3),(b,c,5),...(e,f,8)";
- *3. meanwhile 0 and MAX_INT can represent infinity of weight;
+ *3. meanwhile 0 or MAX_INT can represent infinity of weight;
  *
  * */
-int creategraph( struct Graph *graph, int vertex[], int numbervertex, const char *triplearc, int numberarc )
+int creategraph( struct Graph *graph, int vertex[], int numbervertex, const char *triplearc )
 {
 	if( NULL == graph || NULL == triplearc || numbervertex <= 0 )
 		return -1;
 
 	//vertex number
 	graph->numbervertex = numbervertex;
-	//arc number
-	graph->numberarc = numberarc;
 
 	struct VertexNode *vt = (struct VertexNode *)malloc( numbervertex*sizeof(struct VertexNode) );
 	if( NULL == vt )
@@ -154,26 +164,26 @@ int creategraph( struct Graph *graph, int vertex[], int numbervertex, const char
 	
 			if( 0 != insertarc( graph, v, w, weight ) )
 				return -1;
+
+			//arc number
+			++graph->numberarc;
 		}	
 		
 		triplearc = ++rbrace;
 	}
-
+	
 	return 0;
 }
 
 
-
-
 int main()
 {
-	int array[] = { 12,3,34,56,7,8,9,100 };
-	
-	for( int i = 0; i<sizeof(array)/sizeof(int); i++ )
-	{
-		printf( "%d ", *(array+i) );
-	}
-	printf( "\n" );
+	int vertex[] = { 'A','B','C' };
+	const char *triplearc = "(A,B,3),(A,C,5),(B,C,4)";
+
+	struct Graph graph;
+	int ret = creategraph( &graph, vertex, sizeof(vertex)/sizeof(int), triplearc );
+	printf( "%d \n", ret );
 
 	return 0;
 }
