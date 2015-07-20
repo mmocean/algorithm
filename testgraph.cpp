@@ -7,6 +7,7 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include"definitionqueue.h"
 
 //storage definition
 //adjacency list
@@ -101,29 +102,47 @@ int insertarc( const struct Graph *graph, int v, int w, int weight )
 	
 	struct VertexNode *vertex = getvertex( graph, v );
 	if( NULL == vertex )
+	{
+		printf( "vertex %d does not exist\n", v );
 		return -1;
+	}
 
 	int vertexindex = locatevertex( graph, w );
 	if( -1 == vertexindex )		
+	{
+		printf( "vertexindex %d does not exist\n", v );
 		return -1;
+	}
 
 	struct ArcNode *arc = vertex->firstarc;
+	struct ArcNode *tail = vertex->firstarc;
 	while( NULL != arc )
 	{
+		//if a same arc has been existed then terminate
 		if( vertexindex == arc->vertexindex )	
 			return -1;
+		tail = arc;
 		arc = arc->nextarc;
 	}
 
 	//allocate a new ArcNode
 	arc = (struct ArcNode *)malloc( sizeof(struct ArcNode) );
 	if( NULL == arc )
+	{
+		printf( "malloc error\n" );
 		return -1; 
+	}
 	arc->vertexindex = vertexindex;
+	arc->nextarc = NULL;
 
-	//insert into list
-	arc->nextarc = vertex->firstarc;
-	vertex->firstarc = arc;
+	//insert into list tail
+	if( NULL == tail )
+	{
+		arc->nextarc = vertex->firstarc;
+		vertex->firstarc = arc;
+	} else {
+		tail->nextarc = arc;	
+	}
 
 	switch( graph->graphtype )
 	{
@@ -160,7 +179,10 @@ struct Graph* creategraph( int graphtype, int graphsize, int vertex[], int verte
 	
 	struct Graph *graph = (struct Graph *)malloc( sizeof(struct Graph) + graphsize*sizeof(struct VertexNode) );
 	if( NULL == graph )
+	{
+		printf( "malloc error\n" );
 		return NULL;
+	}
 
 	//graph size
 	graph->graphsize = graphsize;
@@ -199,11 +221,16 @@ struct Graph* creategraph( int graphtype, int graphsize, int vertex[], int verte
 			int v = 0, w = 0, weight = 0;
 			
 			if( 0 != parsetriple( lbrace+1, rbrace-lbrace, &v ,&w, &weight ) )
+			{
+				printf( "parsetriple error\n" );
 				return NULL;
-	
-			if( 0 != insertarc( graph, v, w, weight ) )
-				return NULL;
+			}
 
+			if( 0 != insertarc( graph, v, w, weight ) )
+			{
+				printf( "insertarc error\n" );
+				return NULL;
+			}
 			//arc number
 			++graph->arcnumber;
 		}	
@@ -289,6 +316,7 @@ int getnextadjacency( const struct Graph *graph, int vertex1, int vertex2 )
 }
 
 
+//resursive
 int DFSvisit( const struct Graph *graph, int v, char visited[] )
 {
 	visit( graph, v );
@@ -313,14 +341,76 @@ int DFStraversal( const struct Graph *graph )
 
 	char *visited = (char *)calloc( graph->vertexnumber, sizeof(char) );	
 	if( NULL == visited )
+	{
+		printf( "calloc error\n" );
 		return -1;
+	}
 
 	for( int i = 0; i<graph->vertexnumber; ++i )
 	{
 		if( 0 == *(visited+i) )	
 		{
+			printf( "<tree: \n" );
 			DFSvisit( graph, i, visited );
+			printf( "\n" );
 		}	
+	}
+	printf( "\n" );
+
+	if( NULL != visited )
+		free( (void*)visited );
+
+	return 0;
+}
+
+
+//non-resursive
+int BFStraversal( const struct Graph *graph )
+{
+	if( NULL == graph )
+		return -1;
+	
+	char *visited = (char *)calloc( graph->vertexnumber, sizeof(char) );	
+	if( NULL == visited )
+	{
+		printf( "calloc error\n" );
+		return -1;
+	}
+	
+	struct Queue q;
+	q.front = q.rear = NULL;
+	
+	for( int i = 0; i<graph->vertexnumber; ++i )
+	{
+		if( 0 != *(visited+i) )
+			continue;		
+		
+		printf( "<tree: \n" );
+		visit( graph, i );
+		*(visited+i) = 1;	//has been visited
+		
+		if( 0 != enqueue( &q, i ) )
+			return -1;
+
+		while( 0 != isempty( &q ) )
+		{
+			int v = -1;
+			if( 0 != dequeue( &q, (int*)&v ) )
+				return -1;
+
+			for( int w = getfirstadjacency( graph, v ); w >= 0; w = getnextadjacency( graph, v, w ) )
+			{
+				if( 0 != *(visited+w) )
+					continue;		
+				
+				visit( graph, w );
+				*(visited+w) = 1;	//has been visited
+
+				if( 0 != enqueue( &q, w ) )
+					return -1;
+			}
+		}	
+		printf( "\n" );
 	}
 	printf( "\n" );
 
@@ -333,8 +423,12 @@ int DFStraversal( const struct Graph *graph )
 
 int main()
 {
+	/*
 	int vertex[] = { 'A','B','C','D' };
 	const char *triplearc = "(A,B,3), (A,C,5), (B,C,4), (C,D,2)";
+	*/
+	int vertex[] = { '1','2','3','4','5','6','7','8','9','A' };
+	const char *triplearc = "(1,2),(1,3),(2,4),(2,5),(3,6),(3,7),(4,8),(5,8),(6,7),(9,A)";
 
 	printf( "creategraph:\n" );
 	printf( "triplearc:%s\n", triplearc );
@@ -345,7 +439,11 @@ int main()
 	printf( "DFStraversal:\n" );
 	if ( 0 != DFStraversal( graph ) )
 		printf( "DFStraversal error \n" );
-	
+
+	printf( "BFStraversal:\n" );
+	if ( 0 != BFStraversal( graph ) )
+		printf( "BFStraversal error \n" );
+
 	printf( "destorygraph:\n" );
 	if( NULL != graph )
 		if( 0 != destorygraph( graph ) )
