@@ -8,9 +8,14 @@
 #ifndef _DEFINITION_BINARYTREE_H
 #define _DEFINITION_BINARYTREE_H
 
+#define BALANCED_BINARY_TREE
+
 //tree definition
 struct TREE{
 	int val;
+	#ifdef BALANCED_BINARY_TREE
+	int height;
+	#endif
 	struct TREE *lchild, *rchild;
 };
 
