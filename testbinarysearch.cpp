@@ -35,9 +35,9 @@ int binarysearch( int array[], int size, int key )
 	{
 		int middle = (low+high)/2;
 		if( key < *(array+middle) )
-			--high;
+			high = middle - 1;
 		else if( key > *(array+middle) )
-			++low;
+			low = middle + 1;
 		else 
 			return middle;	
 	}
