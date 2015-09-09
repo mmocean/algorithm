@@ -54,6 +54,33 @@ int statisticchar( const char* str )
 }
 
 
+//求集合的交集
+//a and b are sorted collections
+int intersection( const int collection_a[], int size_a, const int collection_b[], int size_b )
+{
+	int i = 0, j = 0;
+	while( i < size_a && j < size_b )
+	{
+		if( *(collection_a+i) < *(collection_b+j) ) {
+			++i;
+		} else if( *(collection_a+i) > *(collection_b+j) ) {
+			++j;
+		} else {
+			printf( "%d ", *(collection_a+i) );
+			int tmp = *(collection_a+i);
+			//we should skip repeatable value if exists
+			++i;
+			while( i < size_a && tmp == *(collection_a+i) )
+				++i;
+			++j;
+			while( j < size_b && tmp == *(collection_b+j) )
+				++j;
+		}
+	}
+
+	return 0;
+}
+
 
 int main()
 {
@@ -63,6 +90,10 @@ int main()
 	const char* str = "ABCabcABC";
 	printf( "str: %s\n", str );
 	(void)statisticchar( str );
+
+	int a[] = { 2,37,39,46,46,57,63,93 };
+	int b[] = { 2,39,43,46,46,57,69,98,99 };
+	intersection( a, sizeof(a)/sizeof(int), b, sizeof(b)/sizeof(int) );
 
 	return 0;
 }

@@ -435,6 +435,72 @@ int insertbalancedbinarytree( struct TREE **root, int key )
 	return 0;
 }
 
+/*
+ * 1.  N <-- (delete)     2.  N         3.  N         4.  N
+ *    / \                    / \           / \           / \
+ *  (l) (r)                (l) (null)  (null) (r)   (null) (null)
+ *
+ * */
+
+//notice: this function is incomplete(or:wrong) by now!
+int deletebalancedbinarytree( struct TREE **root, int key )
+{
+	if( (*root)->val == key )
+	{
+		//delete
+		if( NULL != (*root)->lchild && NULL != (*root)->rchild )
+		{
+		
+		} else if( NULL == (*root)->lchild && NULL == (*root)->rchild ) {
+			free( (void*)(*root) );
+			(*root) = NULL;
+		} else if( NULL == (*root)->lchild ) {
+			struct TREE *tr = (*root)->rchild;
+			(*root)->val = tr->val;
+			(*root)->height = tr->height;
+			(*root)->lchild = tr->lchild;
+			(*root)->rchild = tr->rchild;
+			free( (void*)tr );
+			tr = NULL;
+		} else { //NULL == (*root)->rchild
+			struct TREE *tl = (*root)->lchild;
+			(*root)->val = tl->val;
+			(*root)->height = tl->height;
+			(*root)->lchild = tl->lchild;
+			(*root)->rchild = tl->rchild;
+			free( (void*)tl );
+			tl = NULL;
+		}
+	}else if( (*root)->val > key ){
+		deletebalancedbinarytree( &(*root)->lchild, key );	
+		if( height( (*root)->lchild ) - height( (*root)->rchild ) == 2 )
+		{
+			if( (*root)->lchild->val > key )
+			{
+				singlerotationwithleft( root );
+			} else {
+				doublerotationwithleft( root );
+			}
+		}
+	}else if( (*root)->val < key ){
+		deletebalancedbinarytree( &(*root)->rchild, key );	
+		if( height( (*root)->rchild ) - height( (*root)->lchild ) == 2 )
+		{
+			if( (*root)->rchild->val < key )
+			{
+				singlerotationwithright( root );
+			} else {
+				doublerotationwithright( root );
+			}
+		}
+	}
+
+	(*root)->height = MAX( height( (*root)->lchild ), height( (*root)->rchild ) ) + 1;
+
+	return 0;
+}
+
+
 
 struct TREE * initbalancedbinarytree( int array[], int size )
 {
@@ -446,6 +512,34 @@ struct TREE * initbalancedbinarytree( int array[], int size )
 	return root;
 }
 
+
+//将二叉树转换成双向链表
+//*lchild <-> *pre 
+//*rchild <-> *rear
+struct TREE * convertbinarytree2linkedlist( struct TREE *root )
+{
+	if( NULL == root )
+		return NULL;
+	
+	struct TREE *llist = convertbinarytree2linkedlist( root->lchild );
+	if( NULL != llist )
+	{
+		struct TREE *tmp = llist;
+		while( NULL != tmp && NULL != tmp->rchild )
+			tmp = tmp->rchild;
+		tmp->rchild = root;
+	}
+	root->lchild = llist;
+
+	struct TREE *rlist = convertbinarytree2linkedlist( root->rchild );
+	if( NULL != rlist )
+	{
+		rlist->lchild = root;
+	}
+	root->rchild = rlist;
+
+	return (NULL != llist)?llist:root;
+}
 
 
 int main()
@@ -499,7 +593,18 @@ int main()
 	printf( "depth:%d\n\n", depth );
 	
 	printf( "clearbinarytree\n" );
-	clearbinarytree( &root );
+//	clearbinarytree( &root );
+	printf( "\n\n" );
+
+	printf( "convertbinarytree2linkedlist\n" );
+	struct TREE * list = convertbinarytree2linkedlist( root );
+	while( NULL != list )
+	{
+		printf( "%d ", list->val );
+		struct TREE *tmp = list->rchild;
+		free( (void*)list );
+		list = tmp;
+	}
 	printf( "\n\n" );
 
 	printf( "initbinarysearchtree\n" );
